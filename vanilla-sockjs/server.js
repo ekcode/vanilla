@@ -11,7 +11,11 @@ echo.on('connection', function(conn) {
         
     conn.on('data', function(message) {
         family.forEach(function (c, key) {
-            c.write(message);
+            msgBody = {};
+            msgBody.message = message;
+            msgBody.writer = conn.id;
+            console.log(JSON.stringify(msgBody));
+            c.write(JSON.stringify(msgBody));
         });
     });
     conn.on('close', function() {
