@@ -3,17 +3,35 @@ include _script
 script(type="text/javascript").
     var sock = new SockJS('http://172.27.68.53:9999/echo');
 
-    sock.onopen = function() {
+    sock.onopen = function(a, b, c) {
         console.log('open');
     };
     sock.onmessage = function(e) {
-        data = JSON.parse(e.data);
+        var data = JSON.parse(e.data);
+
+        if(data.type == 'AUTH') {
+            window['x-auth-id'] = data.id;
+            console.log('your session id is ' + data.id);
+            return;
+        }
+
+        var myMessage = false;
+        if(data.id == window['x-auth-id']) {
+            myMessage = true;
+        }
+
         console.log('message', e.data);
         var chatBoard = $('#chatBoard');
+        console.log(data.id);
+        console.log(data.loginId);
         var id = $('<span class="id">').text(data.id);
         var loginId = $('<span class="loginId">').text(data.loginId);
-        var message = $('<div>').addClass('talk-bubble tri-right round border right-top')
-            .append($('<div>').addClass('talktext').append($('<p>').text(data.message)));
+
+        var myMessageBox = $('<div>').addClass('talk-bubble tri-right left-in');
+        var yourMessageBox = $('<div>').addClass('talk-bubble tri-right right-in');
+        var messageBox = myMessage ? myMessageBox : yourMessageBox;
+        var message = messageBox.append($('<div>').addClass('talktext').append($('<p>').text(data.message)));
+
         console.log(message);
         chatBoard.append(id).append(loginId).append(message).append('<br/>');
     };
@@ -33,13 +51,14 @@ script(type="text/javascript").
         } else if(type == 'noti') {
         }
     }
+
     $(function() {
         var loginId = prompt('nick name?');
         $('input[name=msgInput]').keypress(function (event) {
             if(event.which == 13) {
                 var message = $('input[name=msgInput]').val();
-                
                 var messageBody = { message: message, loginId: loginId };
+
                 sock.send(JSON.stringify(messageBody));
                 $('input[name=msgInput]').val('');
             }
