@@ -4,23 +4,21 @@ var sockjs = require('sockjs');
 var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
 
 
-var family = []
+var chatMembers = []
 echo.on('connection', function(conn) {
-    family.push(conn);
-    console.log(family);
+    chatMembers.push(conn);
+    console.log(chatMembers.chatId);
         
-    conn.on('data', function(message) {
-        family.forEach(function (c, key) {
-            msgBody = {};
-            msgBody.message = message;
-            msgBody.writer = conn.id;
-            console.log(JSON.stringify(msgBody));
-            c.write(JSON.stringify(msgBody));
+    conn.on('data', function(messageBody) {
+        chatMembers.forEach(function (c, key) {
+            console.log(messageBody);
+            messageBody.id = c.id;
+            c.write(messageBody);
         });
     });
     conn.on('close', function() {
         console.log('close me ', conn.id);
-        family.splice(family.indexOf(conn), 1);  
+        chatMembers.splice(chatMembers.indexOf(conn), 1);  
     });
 });
 

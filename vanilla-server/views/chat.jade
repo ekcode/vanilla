@@ -1,0 +1,83 @@
+doctype html
+include _script
+script(type="text/javascript").
+    var sock = new SockJS('http://172.27.68.53:9999/echo');
+
+    sock.onopen = function() {
+        console.log('open');
+    };
+    sock.onmessage = function(e) {
+        data = JSON.parse(e.data);
+        console.log('message', e.data);
+        var chatBoard = $('#chatBoard');
+        var id = $('<span class="id">').text(data.id);
+        var loginId = $('<span class="loginId">').text(data.loginId);
+        var message = $('<div>').addClass('talk-bubble tri-right round border right-top')
+            .append($('<div>').addClass('talktext').append($('<p>').text(data.message)));
+        console.log(message);
+        chatBoard.append(id).append(loginId).append(message).append('<br/>');
+    };
+    sock.onclose = function() {
+        console.log('close');
+        sock.close();
+    };
+
+
+    function sendMsg(msg, type) {
+        if(type == 'byUser') {
+
+        } else if(type == 'warn') {
+            var chatBoard = $('#chatBoard');
+            var message = $('<div class="msg warn">').text(msg);
+            chatBoard.append(message);
+        } else if(type == 'noti') {
+        }
+    }
+    $(function() {
+        var loginId = prompt('nick name?');
+        $('input[name=msgInput]').keypress(function (event) {
+            if(event.which == 13) {
+                var message = $('input[name=msgInput]').val();
+                
+                var messageBody = { message: message, loginId: loginId };
+                sock.send(JSON.stringify(messageBody));
+                $('input[name=msgInput]').val('');
+            }
+        });
+
+
+        $('input[name=exit]').click(function (event) {
+            sock.close();
+        });
+
+        function timer() {
+            var closeAt = moment($('#closeAt').val());
+            var now = moment();
+            var diffSeconds = closeAt.diff(now, 'seconds');
+            var diffMinutes = closeAt.diff(now, 'minutes');
+            var diffHours = closeAt.diff(now, 'hours');
+            if(now > closeAt) {
+                clearInterval(interval);
+                sendMsg('char room was closed', 'warn');
+                $('input[name=msgInput]').remove();
+            }
+
+            $('#remainTime').text('close after ' + diffHours + ':' + diffMinutes%24 + ':' + diffSeconds%60);
+        }
+
+        var interval = setInterval(timer, 1000);
+    });
+
+
+div#nickName Nick name is #{loginId}
+div#chatId chat id is #{chatId}
+    
+div
+    input#closeAt(type='hidden', value='#{closeAt}')
+    div#remainTime
+
+
+div#chatBoard
+
+input(type='text', name='msgInput')
+
