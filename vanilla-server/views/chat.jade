@@ -27,13 +27,12 @@ script(type="text/javascript").
         var id = $('<span class="id">').text(data.id);
         var loginId = $('<span class="loginId">').text(data.loginId);
 
-        var myMessageBox = $('<div>').addClass('talk-bubble tri-right left-in');
-        var yourMessageBox = $('<div>').addClass('talk-bubble tri-right right-in');
-        var messageBox = myMessage ? myMessageBox : yourMessageBox;
-        var message = messageBox.append($('<div>').addClass('talktext').append($('<p>').text(data.message)));
+        var messageBox = myMessage ?
+            $('div.hidden > .my-message').clone():
+            $('div.hidden > .your-message').clone();
 
-        console.log(message);
-        chatBoard.append(id).append(loginId).append(message).append('<br/>');
+        $('p', messageBox).text(data.message);
+        chatBoard.append(id).append(loginId).append(messageBox).append('<br/>');
     };
     sock.onclose = function() {
         console.log('close');
@@ -72,16 +71,13 @@ script(type="text/javascript").
         function timer() {
             var closeAt = moment($('#closeAt').val());
             var now = moment();
-            var diffSeconds = closeAt.diff(now, 'seconds');
-            var diffMinutes = closeAt.diff(now, 'minutes');
-            var diffHours = closeAt.diff(now, 'hours');
             if(now > closeAt) {
                 clearInterval(interval);
                 sendMsg('char room was closed', 'warn');
                 $('input[name=msgInput]').remove();
             }
 
-            $('#remainTime').text('close after ' + diffHours + ':' + diffMinutes%24 + ':' + diffSeconds%60);
+            $('#remainTime').text('close after ' + moment.utc(closeAt - now).format('HH:mm:ss'));
         }
 
         var interval = setInterval(timer, 1000);
@@ -100,3 +96,12 @@ div#chatBoard
 
 input(type='text', name='msgInput')
 
+div.hidden
+    div.message-container.my-message
+        div.talk-bubble.tri-right.right-in
+            div.talktext
+                p
+    div.message-container.your-message
+        div.talk-bubble.tri-right.left-in
+            div.talktext
+                p

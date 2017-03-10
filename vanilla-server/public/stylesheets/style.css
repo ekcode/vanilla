@@ -17,7 +17,16 @@ div#displayCloseAt {
     display:none
 }
 
+.message-container {
+    width:100%;
+}
+.f_l {
+    float: left;
+}
 
+.f_r {
+    float: right;
+}
 
 /* CSS talk bubble */
 .talk-bubble {
@@ -38,9 +47,6 @@ div#displayCloseAt {
 
 }
 
-#chatBoard {
-    text-align:right;
-}
 
 /* Right triangle placed top left flush. */
 .tri-right.border.left-top:before {
