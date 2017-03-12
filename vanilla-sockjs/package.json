@@ -1,0 +1,15 @@
+{
+  "name": "sock-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "supervisor server.js"
+  },
+  "dependencies": {
+    "redis": "^2.7.0"
+  },
+  "description": "sockjs chat server",
+  "main": "server.js",
+  "author": "ekcode",
+  "license": "ISC"
+}
