@@ -58,8 +58,6 @@ echo.on('connection', function(conn) {
                     res.message = jsonData.message;
                     res.loginId = jsonData.nickname;
                     res.id = conn.id;
-                    console.log('c.id ' + c.id);
-                    console.log(connections);
                     if(connections[c.id]) {
                         connections[c.id].write(JSON.stringify(res));
                     }
@@ -68,39 +66,11 @@ echo.on('connection', function(conn) {
             });
 
         }
-//        chatMembers.forEach(function (c, key) {
-//
-//
-//
-//            var chatGroup = {chatId: jsonData.chatId, members: []};
-//
-//            chatMembers.push(chatGroup);
-//
-//        });
-//
-//
-//        if(jsonData.type == 'SEND') {
-//        }
-//
-//        if(jsonData.type == 'IMAGE') {
-//        }
-//
-//
-//        chatMembers.forEach(function (c, key) {
-//
-//
-//            var res = {};
-//            res.message = JSON.parse(data).message;
-//            res.loginId = JSON.parse(data).loginId;
-//            res.id = conn.id;
-//
-//            console.log(JSON.stringify(res));
-//            c.write(JSON.stringify(res));
-//        });
     });
 
     conn.on('close', function() {
         console.log('close me ', conn.id);
+        // 이거 고쳐야 됨 delete connections[conn.id];
         //chatMembers.splice(chatMembers.indexOf(conn), 1);
     });
 });

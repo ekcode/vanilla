@@ -11,6 +11,7 @@ var index = require('./routes/index');
 var chat = require('./routes/chat');
 var users = require('./routes/users');
 var create = require('./routes/create');
+var close = require('./routes/close');
 
 var app = express();
 
@@ -32,6 +33,7 @@ app.use('/', index);
 app.use('/c', chat)
 app.use('/users', users);
 app.use('/create', create);
+app.use('/close', close);
 
 app.locals.moment = require('moment')
 

@@ -3,46 +3,52 @@ include _script
 script(type="text/javascript").
     var sock = new SockJS('http://172.27.68.53:9999/echo');
 
-    sock.onopen = function(a, b, c) {
-        console.log('open');
-    };
-    sock.onmessage = function(e) {
-        var data = JSON.parse(e.data);
+    function initSock() {
 
-        if(data.type == 'AUTH') {
-            window['x-auth-id'] = data.id;
-            console.log('your session id is ' + data.id);
-            return;
-        }
+        sock.onopen = function() {
+            console.log('open');
+            sendMsg(window.nickname + ' is joined', 'JOIN');
+        };
 
-        var myMessage = false;
-        if(data.id == window['x-auth-id']) {
-            myMessage = true;
-        }
+        sock.onmessage = function(e) {
+            var data = JSON.parse(e.data);
 
-        console.log('message', e.data);
-        var chatBoard = $('#chatBoard');
-        console.log(data.id);
-        console.log(data.loginId);
-        var id = $('<span class="id">').text(data.id);
-        var loginId = $('<span class="loginId">').text(data.loginId);
+            if(data.type == '') {
+                window.sessionId = data.id;
+                console.log('your session id is ' + data.id);
+                return;
+            }
 
-        var messageBox = myMessage ?
-            $('div.hidden > .my-message').clone():
-            $('div.hidden > .your-message').clone();
+            var myMessage = false;
+            if(data.id == window.sessionId) {
+                myMessage = true;
+            }
 
-        $('p', messageBox).text(data.message);
-        chatBoard.append(id).append(loginId).append(messageBox).append('<br/>');
-    };
-    sock.onclose = function() {
-        console.log('close');
+            console.log('message', e.data);
+            var chatBoard = $('#chatBoard');
+            var messageBox = myMessage ?
+                $('div.hidden > .my-message').clone():
+                $('div.hidden > .your-message').clone();
+
+            $('p', messageBox).text(data.message);
+            $('.name', messageBox).text(data.nickname);
+            chatBoard.append(messageBox).append('<br/>');
+        };
+
+        sock.onclose = close;
+
+    }
+
+    function close() {
         sock.close();
-    };
+        $.post('/close/' + window.chatId, {chatId: window.chatId, sessionId: window.sessionId});
+    }
 
 
-    function sendMsg(msg, type) {
-        if(type == 'byUser') {
-
+    function sendMsg(message, type) {
+        if(type == 'JOIN') {
+            var data = {chatId: window.chatId, type: type, message: message, nickname: window.nickname}
+            sock.send(JSON.stringify(data));
         } else if(type == 'warn') {
             var chatBoard = $('#chatBoard');
             var message = $('<div class="msg warn">').text(msg);
@@ -52,11 +58,13 @@ script(type="text/javascript").
     }
 
     $(function() {
-        var loginId = prompt('nick name?');
+        window.nickname = prompt('nick name?');
+        window.chatId = $('#chatId').val();
+
         $('input[name=msgInput]').keypress(function (event) {
             if(event.which == 13) {
                 var message = $('input[name=msgInput]').val();
-                var messageBody = { message: message, loginId: loginId };
+                var messageBody = { type: 'SEND', message: message, nickname: window.nickname, chatId: window.chatId};
 
                 sock.send(JSON.stringify(messageBody));
                 $('input[name=msgInput]').val('');
@@ -81,11 +89,15 @@ script(type="text/javascript").
         }
 
         var interval = setInterval(timer, 1000);
+
+
+        initSock();
     });
 
 
-div#nickName Nick name is #{loginId}
-div#chatId chat id is #{chatId}
+div Nick name is #{loginId}
+div chat id is #{chatId}
+input#chatId(type='hidden', value='#{chatId}')
     
 div
     input#closeAt(type='hidden', value='#{closeAt}')
@@ -98,10 +110,12 @@ input(type='text', name='msgInput')
 
 div.hidden
     div.message-container.my-message
+        div.name
         div.talk-bubble.tri-right.right-in
             div.talktext
                 p
     div.message-container.your-message
         div.talk-bubble.tri-right.left-in
+        div.name
             div.talktext
                 p

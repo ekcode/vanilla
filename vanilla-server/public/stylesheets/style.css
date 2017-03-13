@@ -1,7 +1,7 @@
 body {
     padding: 50px;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-    background-color: lightblue;
+    background-color: white;
 }
 
 a {
@@ -35,7 +35,7 @@ div#displayCloseAt {
     position: relative;
     width: 200px;
     height: auto;
-    background-color: lightyellow;
+    background-color: white;
 }
 .border{
     border: 8px solid #666;
