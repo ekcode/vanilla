@@ -14,64 +14,101 @@ db.on('connect', function() {
 var connections = {};
 
 echo.on('connection', function(conn) {
-    console.log(conn.id);
 
     connections[conn.id] = conn;
+    console.log(connections);
+    console.log(conn.id);
 
     conn.on('data', function(data) {
 
-        console.log('data: ' + data);
-        var jsonData = JSON.parse(data);
+        var reqJson = JSON.parse(data);
 
-        if(jsonData.type == 'JOIN') {
+        if(reqJson.type == 'INIT') {
+            var res = {};
+            res.connId = conn.id;
+            res.type = 'JOIN';
+            conn.write(JSON.stringify(res));
+        }
 
-            var existChat = false;
-
-            db.exists('chat_' + jsonData.chatId, function(err, reply) {
-                if (reply === 1) {
-                    console.log('chat exists');
-                    db.get('chat_' + jsonData.chatId, function(err, members) {
-                        var membersJson = JSON.parse(members);
-                        var member = {id: conn.id, nickname: jsonData.nickname};
-                        membersJson.push(member);
-                        db.set('chat_' + jsonData.chatId, JSON.stringify(membersJson));
-                    });
-                } else {
-                    console.log('create chat');
-                    var member = {id: conn.id, nickname: jsonData.nickname};
-                    var members = [member];
+        if(reqJson.type == 'JOIN') {
+            var res = {};
+            res.connId = reqJson.connId;
+            res.type = reqJson.type;
+            res.nickname = reqJson.nickname;
 
 
-                    db.set('chat_' + jsonData.chatId, JSON.stringify(members));
-                }
+            db.get('chat_' + reqJson.chatId, function(err, reply) {
+                var memberList = JSON.parse(reply);
+
+
+                memberList.forEach(function (c, key) {
+                    var res = {type:'NOTI-JOIN'};
+                    res.nickname = reqJson.nickname;
+                    res.connId = conn.id;
+
+                    if(connections[c.connId]) {
+                        connections[c.connId].write(JSON.stringify(res));
+                    }
+                });
+
+                var member = {connId: reqJson.connId, nickname: reqJson.nickname};
+                memberList.push(member);
+
+
+                db.set('chat_' + reqJson.chatId, JSON.stringify(memberList));
             });
+
         }
 
 
-        if(jsonData.type == 'SEND') {
-            var chatId = jsonData.chatId;
+        if(reqJson.type == 'SEND') {
+            var chatId = reqJson.chatId;
             db.get('chat_' + chatId, function(err, reply) {
-                var membersJson = JSON.parse(reply);
-                console.log(membersJson);
-                membersJson.forEach(function (c, key) {
-                    var res = {};
-                    res.message = jsonData.message;
-                    res.loginId = jsonData.nickname;
-                    res.id = conn.id;
-                    if(connections[c.id]) {
-                        connections[c.id].write(JSON.stringify(res));
+                var memberList = JSON.parse(reply);
+                memberList.forEach(function (c, key) {
+                    var res = {type: 'SEND'};
+                    res.message = reqJson.message;
+                    res.loginId = reqJson.nickname;
+                    res.connId = conn.id;
+                    if(connections[c.connId]) {
+                        connections[c.connId].write(JSON.stringify(res));
                     }
                 });
 
             });
+        }
+
+        if(reqJson.type =='UNLOAD') {
+            var chatId = reqJson.chatId;
+
+            db.get('chat_' + chatId, function(err, reply) {
+                var memberList = JSON.parse(reply);
+                var res = {type: 'NOTI-UNLOAD'};
+
+                memberList.forEach(function (c, key) {
+
+                    if(c.connId == conn.id) {
+                        var member = memberList[key];
+                        console.log(memberList);
+                        console.log('key- '+ key);
+                        
+                        remainMemberList = memberList.filter(function(el) { return el.connId != conn.id } );
+                        db.set('chat_' + chatId, JSON.stringify(remainMemberList));
+                    }
+
+                    res.memberList = remainMemberList;
+                    if(connections[c.connId]) {
+                        connections[c.connId].write(JSON.stringify(res));
+                    }
+
+                });
+            });
 
         }
-    });
 
-    conn.on('close', function() {
-        console.log('close me ', conn.id);
-        // 이거 고쳐야 됨 delete connections[conn.id];
-        //chatMembers.splice(chatMembers.indexOf(conn), 1);
+        conn.on('close', function() {
+            delete connections[conn.id];
+        });
     });
 });
 

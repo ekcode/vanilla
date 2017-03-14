@@ -10,6 +10,7 @@ router.post('/', function(req, res, next) {
     const uuid = uuidV4().substr(0, 5);
     req.chatId = uuid;
     db.set('chat_' + uuid, '[]');
+    db.set('timeout_' + uuid, moment().add(10, 'minutes').format());
     next();
 }, function(req, res) {
     res.redirect('/c/' + req.chatId);

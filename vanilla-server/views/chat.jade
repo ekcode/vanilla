@@ -6,86 +6,100 @@ script(type="text/javascript").
     function initSock() {
 
         sock.onopen = function() {
-            console.log('open');
-            sendMsg(window.nickname + ' is joined', 'JOIN');
+            console.log('init');
+            var data = {type: 'INIT', chatId: window.chatId}
+            sock.send(JSON.stringify(data));
         };
 
         sock.onmessage = function(e) {
+            console.log(e.data);
             var data = JSON.parse(e.data);
 
-            if(data.type == '') {
-                window.sessionId = data.id;
-                console.log('your session id is ' + data.id);
-                return;
+
+
+            if(data.type == 'JOIN') {
+                // user input
+                window.nickname = 'Ricardo';
+                var messageBody = {type: 'JOIN', chatId: window.chatId, nickname: window.nickname, connId: data.connId}
+                sock.send(JSON.stringify(messageBody));
+            }
+
+            if(data.type == 'NOTI-JOIN') {
+                sendMsg(data.message, data.type);
+            }
+
+            if(data.type == 'NOTI-UNLOAD') {
+                console.log(data.message);
             }
 
             var myMessage = false;
-            if(data.id == window.sessionId) {
+            if(data.connId == window.connId) {
                 myMessage = true;
             }
 
-            console.log('message', e.data);
-            var chatBoard = $('#chatBoard');
-            var messageBox = myMessage ?
-                $('div.hidden > .my-message').clone():
-                $('div.hidden > .your-message').clone();
+            if(data.type == 'SEND') {
+                console.log('message', e.data);
+                var chatBoard = $('#chatBoard');
+                var messageBox = myMessage ?
+                    $('div.hidden > .my-message').clone():
+                    $('div.hidden > .your-message').clone();
 
-            $('p', messageBox).text(data.message);
-            $('.name', messageBox).text(data.nickname);
-            chatBoard.append(messageBox).append('<br/>');
+                $('p', messageBox).text(data.message);
+                $('.name', messageBox).text(data.nickname);
+                chatBoard.append(messageBox).append('<br/>');
+            }
         };
 
-        sock.onclose = close;
+        //sock.onclose = close;
 
     }
 
     function close() {
+        var messageBody = {type: 'UNLOAD', chatId: window.chatId}
+        sock.send(JSON.stringify(messageBody));
         sock.close();
-        $.post('/close/' + window.chatId, {chatId: window.chatId, sessionId: window.sessionId});
     }
 
 
     function sendMsg(message, type) {
-        if(type == 'JOIN') {
-            var data = {chatId: window.chatId, type: type, message: message, nickname: window.nickname}
-            sock.send(JSON.stringify(data));
-        } else if(type == 'warn') {
+        if(type == 'warn') {
             var chatBoard = $('#chatBoard');
-            var message = $('<div class="msg warn">').text(msg);
+            var message = $('<div class="msg warn">').text(message);
             chatBoard.append(message);
-        } else if(type == 'noti') {
+        } else if(type == 'NOTI-JOIN') {
+            var chatBoard = $('#chatBoard');
+            var message = $('<div class="msg warn">').text(message);
+            chatBoard.append(message);
         }
     }
 
     $(function() {
-        window.nickname = prompt('nick name?');
         window.chatId = $('#chatId').val();
 
-        $('input[name=msgInput]').keypress(function (event) {
+        $(window).on('unload', close);
+
+
+        $('input[name=inpMessage]').keypress(function (event) {
             if(event.which == 13) {
-                var message = $('input[name=msgInput]').val();
+                var message = $('input[name=inpMessage]').val();
                 var messageBody = { type: 'SEND', message: message, nickname: window.nickname, chatId: window.chatId};
 
                 sock.send(JSON.stringify(messageBody));
-                $('input[name=msgInput]').val('');
+                $('input[name=inpMessage]').val('');
             }
         });
 
-
-        $('input[name=exit]').click(function (event) {
-            sock.close();
-        });
 
         function timer() {
-            var closeAt = moment($('#closeAt').val());
+            var timeout = moment($('#timeout').val());
             var now = moment();
-            if(now > closeAt) {
+            if(now > timeout) {
                 clearInterval(interval);
                 sendMsg('char room was closed', 'warn');
-                $('input[name=msgInput]').remove();
+                $('input[name=inpMessage]').remove();
             }
 
-            $('#remainTime').text('close after ' + moment.utc(closeAt - now).format('HH:mm:ss'));
+            $('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
         }
 
         var interval = setInterval(timer, 1000);
@@ -100,13 +114,13 @@ div chat id is #{chatId}
 input#chatId(type='hidden', value='#{chatId}')
     
 div
-    input#closeAt(type='hidden', value='#{closeAt}')
+    input#timeout(type='hidden', value='#{timeout}')
     div#remainTime
 
 
 div#chatBoard
 
-input(type='text', name='msgInput')
+input(type='text', name='inpMessage')
 
 div.hidden
     div.message-container.my-message
