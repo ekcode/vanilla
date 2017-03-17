@@ -7,13 +7,21 @@ var redis = require('redis');
 var db = redis.createClient();
 
 router.post('/', function(req, res, next) {
-    const uuid = uuidV4().substr(0, 5);
-    req.chatId = uuid;
-    db.set('chat_' + uuid, '[]');
-    db.set('timeout_' + uuid, moment().add(10, 'minutes').format());
-    next();
+  const uuid = uuidV4().substr(0, 5);
+  req.chatId = uuid;
+  var h = req.body.timeHours;
+  var m = req.body.timeMinutes;
+  var s = req.body.timeSeconds;
+  db.set('chat_' + uuid, '[]');
+  db.set('timeout_' + uuid,
+      moment()
+      .add(h, 'hours')
+      .add(m, 'minutes')
+      .add(s, 'seconds')
+      .format());
+  next();
 }, function(req, res) {
-    res.redirect('/c/' + req.chatId);
+  res.redirect('/c/' + req.chatId);
 });
 
 module.exports = router;
