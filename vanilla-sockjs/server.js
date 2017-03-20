@@ -107,6 +107,7 @@ echo.on('connection', function(conn) {
         }
 
         conn.on('close', function() {
+            console.log('delete ' + conn.id);
             delete connections[conn.id];
         });
     });

@@ -1,8 +1,9 @@
 include _script
+
 head
   meta(name="viewport", content="width=device-width", initial-scale="1")
 script(type="text/javascript").
-    var sock = new SockJS('http://172.27.68.53:9999/echo');
+    var sock = new SockJS('http://127.0.0.1:9999/echo');
 
     function initSock() {
 
@@ -56,6 +57,7 @@ script(type="text/javascript").
     }
 
     function close() {
+        console.log('bye~')
         var messageBody = {type: 'UNLOAD', chatId: window.chatId}
         sock.send(JSON.stringify(messageBody));
         sock.close();
@@ -77,7 +79,7 @@ script(type="text/javascript").
     $(function() {
         window.chatId = $('#chatId').val();
 
-        $(window).on('unload', close);
+        window.onbeforeunload = close;
 
 
         $('input[name=inpMessage]').keypress(function (event) {
@@ -98,9 +100,12 @@ script(type="text/javascript").
                 clearInterval(interval);
                 sendMsg('char room was closed', 'warn');
                 $('input[name=inpMessage]').remove();
+                $('#remainTime').text('close after ' + moment.utc(0).format('HH:mm:ss'));
+                close();
+            } else {
+                $('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
             }
 
-            $('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
         }
 
         var interval = setInterval(timer, 1000);
@@ -109,6 +114,27 @@ script(type="text/javascript").
         initSock();
     });
 
+
+body
+  nav.nav
+    nav.nav-left
+      .nav-item VANILLA 
+        i.logo-side-icon.fa.fa-meh-o(aria-hidden="true")
+    nav.nav-center
+      .nav-item
+        .field
+          p.control
+            a.button.is-danger.is-small(title="Copy URL to clipboard.") #{chatId}
+
+    span.nav-toggle
+      span
+      span
+      span
+    nav.nav-right.nav-menu
+      .nav-item
+        span.icon.menu-icon
+          i.fa.fa-user-circle(aria-hidden="true")
+        span.icon-text NICK NAME
 
 div Nick name is #{loginId}
 div chat id is #{chatId}
