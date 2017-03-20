@@ -1,72 +1,77 @@
-doctype html
-include _script
-head
-  meta(name="viewport", content="width=device-width", initial-scale="1")
-body
-  nav.nav
-    nav.nav-left
-      .nav-item VANILLA 
-        i.logo-side-icon.fa.fa-meh-o(aria-hidden="true")
-    nav.nav-center
-      .nav-item
-    span.nav-toggle
-      span
-      span
-      span
-    nav.nav-right.nav-menu
-      .nav-item
-        span.icon.menu-icon
-          i.fa.fa-user-circle(aria-hidden="true")
-        span.icon-text NICK NAME
+extends layout
+block content
+  section.hero.is-primary
+    .hero-body
+      .container
+        h1.title Create chat room
+        h2.subtitle and share with friends!
 
-  .container
-    .columns
-      .column
-        form(id='target', action='/create', method='post')
-          .column
+  section.section
+    .container
+      .columns
+        .column
+          .columns.is-multiline.is-mobile
+            .column
+            .column.is-three-quarters SET YOUR NAME
+              .field
+                p.control
+                  input.input.is-primary(type="text", value="")
+            .column
+
+      .columns
+        .column
+          form(id='target', action='/create', method='post')
             .field
-                .columns.is-multiline.is-mobile
-                  .column
-                  .column.is-three-quarters.big-text EXPIRES IN
-                    progress.progress.is-small(value="15", max="100") 15%
-                  .column
-                .columns.is-multiline.is-mobile
-                  .column
-                  .column
-                    .select
-                      select(name="timeHours")
-                        option 0
-                        option 1
-                        option 2
-                        option 3
-                    .bold.time-unit Hours
-                  .column
-                    .select
-                      select(name="timeMinutes")
-                        option 0
-                        option 1
-                        option 3
-                        option 5
-                        option 10
-                        option 20
-                        option 30
-                        option 40
-                        option 50
-                    .bold.time-unit Minutes
-                  .column
-                    .select
-                      select(name="timeSeconds")
-                        option 10
-                        option 20
-                        option("selected") 30
-                        option 40
-                        option 50
-                    .bold.time-unit Seconds
-                  .column
-                .column.center
-                  button.button.is-primary.new-chat New Chat
+              .columns.is-multiline.is-mobile
+                .column
+                .column.is-three-quarters.big-text EXPIRES IN
+                  progress.progress.is-small(value="15", max="100") 15%
+                .column
+              .columns.is-multiline.is-mobile
+                .column
+                .column
+                  .select
+                    select(name="timeHours")
+                      option 0
+                      option 1
+                      option 2
+                      option 3
+                  .bold.time-unit Hours
+                .column
+                  .select
+                    select(name="timeMinutes")
+                      option 0
+                      option 1
+                      option 3
+                      option("selected") 5
+                      option 10
+                      option 20
+                      option 30
+                      option 40
+                      option 50
+                  .bold.time-unit Minutes
+                .column
+                  .select
+                    select(name="timeSeconds")
+                      option 10
+                      option 20
+                      option("selected") 30
+                      option 40
+                      option 50
+                  .bold.time-unit Seconds
+                .column
+              .column.center
+                button.button.is-primary.new-chat New Chat
 
 
+  section.section
+    .container
+      article.message
+        .message-body
+          ul
+            li All chat rooms have time limits.
+            li Each time you refresh or open a chat link, a new session is created. 
+            li We do not store any messages you read and write.
 
   footer.footer
     .container
