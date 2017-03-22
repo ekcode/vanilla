@@ -1,6 +1,7 @@
 var http = require('http');
 var sockjs = require('sockjs');
 var redis = require('redis');
+var _ = require('lodash');
 
 
 var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
@@ -16,7 +17,6 @@ var connections = {};
 echo.on('connection', function(conn) {
 
     connections[conn.id] = conn;
-    console.log(connections);
     console.log(conn.id);
 
     conn.on('data', function(data) {
@@ -27,6 +27,7 @@ echo.on('connection', function(conn) {
             var res = {};
             res.connId = conn.id;
             res.type = 'JOIN';
+            res.nickname = reqJson.nickname;
             conn.write(JSON.stringify(res));
         }
 
@@ -68,7 +69,7 @@ echo.on('connection', function(conn) {
                 memberList.forEach(function (c, key) {
                     var res = {type: 'SEND'};
                     res.message = reqJson.message;
-                    res.loginId = reqJson.nickname;
+                    res.nickname = reqJson.nickname;
                     res.connId = conn.id;
                     if(connections[c.connId]) {
                         connections[c.connId].write(JSON.stringify(res));
@@ -78,38 +79,42 @@ echo.on('connection', function(conn) {
             });
         }
 
-        if(reqJson.type =='UNLOAD') {
+        if(reqJson.type == 'UNLOAD') {
+            delete connections[conn.id];
+            console.log('delete - ' + conn.id);
+
             var chatId = reqJson.chatId;
 
             db.get('chat_' + chatId, function(err, reply) {
                 var memberList = JSON.parse(reply);
                 var res = {type: 'NOTI-UNLOAD'};
+                var unloadMember = memberList.filter(function(member) { return member.connId == conn.id } );
+                memberList = memberList.filter(function(member) { return member.connId != conn.id } );
+                db.set('chat_' + chatId, JSON.stringify(memberList));
 
-                memberList.forEach(function (c, key) {
 
-                    if(c.connId == conn.id) {
-                        var member = memberList[key];
-                        console.log(memberList);
-                        console.log('key- '+ key);
-                        
-                        remainMemberList = memberList.filter(function(el) { return el.connId != conn.id } );
-                        db.set('chat_' + chatId, JSON.stringify(remainMemberList));
+                res.memberList = memberList;
+                res.unloadMember = unloadMember;
+
+
+                memberList.forEach(function (member, key) {
+                    if(connections[member.connId]) {
+                        console.log('-3- ' + member.connId);
+                        connections[member.connId].write(JSON.stringify(res));
                     }
-
-                    res.memberList = remainMemberList;
-                    if(connections[c.connId]) {
-                        connections[c.connId].write(JSON.stringify(res));
-                    }
-
                 });
             });
-
         }
 
-        conn.on('close', function() {
-            console.log('delete ' + conn.id);
+        // timeout
+        if(reqJson.type == 'TIMEOUT') {
+            var chatId = reqJson.chatId;
             delete connections[conn.id];
-        });
+            db.del(['chat_' + chatId, 'timeout_' + chatId]);
+        }
+    });
+
+    conn.on('close', function() {
     });
 });
 

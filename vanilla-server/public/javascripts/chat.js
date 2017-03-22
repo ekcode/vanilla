@@ -1,32 +1,48 @@
 var sock = new SockJS('http://127.0.0.1:9999/echo');
 
+function send(obj) {
+    sock.send(JSON.stringify(obj));
+}
+
 function initSock() {
 
     sock.onopen = function() {
-        console.log('init');
-        var data = {type: 'INIT', chatId: window.chatId}
-        sock.send(JSON.stringify(data));
+        console.log('init >');
+        var names = [
+            'Rory McIlroy', 'Jason Day', 'Hideki Matsuyama'
+                ,'Henrik Stenson', 'Jordan Spieth', 'Justin Thomas'
+                ,'Adam Scott', 'Rickie Fowler', 'Sergio Garcia'
+                ,'Alex Noren', 'Patrick Reed', 'Justin Rose'
+                ,'Tyrrell Hatton', 'Danny Willett', 'Paul Casey'
+                ,'Bubba Watson', 'Phil Mickelson', 'Branden Grace'
+                ,'Matt Kuchar', 'Russell Knox', 'Jimmy Walker'
+                ,'Brandt Snedeker', 'Brooks Koepka', 'Jon Rahm'];
+
+        var nickname = names[Math.floor(Math.random() * names.length)];
+        var messageBody = {type: 'INIT', chatId: window.chatId, nickname: nickname}
+        send(messageBody);
     };
 
     sock.onmessage = function(e) {
-        console.log(e.data);
         var data = JSON.parse(e.data);
 
-
-
         if(data.type == 'JOIN') {
-            // user input
-            window.nickname = 'Ricardo';
-            var messageBody = {type: 'JOIN', chatId: window.chatId, nickname: window.nickname, connId: data.connId}
-            sock.send(JSON.stringify(messageBody));
+            // variable for checking me.
+            window.nickname = data.nickname;
+            window.connId = data.connId;
+            var messageBody = {type: 'JOIN', chatId: window.chatId, nickname: data.nickname, connId: data.connId}
+            send(messageBody);
         }
 
         if(data.type == 'NOTI-JOIN') {
-            sendMsg(data.message, data.type);
+            console.log('noti-join > ' + e.data);
+            var chatBoard = $('#chatBoard');
+            var message = $('<div class="msg warn">').text(message);
+            chatBoard.append(message);
         }
 
         if(data.type == 'NOTI-UNLOAD') {
-            console.log(data.message);
+            console.log('noti-unload' + e.data);
         }
 
         var myMessage = false;
@@ -47,42 +63,25 @@ function initSock() {
         }
     };
 
-    //sock.onclose = close;
-
-}
-
-function close() {
-    console.log('bye~')
-    var messageBody = {type: 'UNLOAD', chatId: window.chatId}
-    sock.send(JSON.stringify(messageBody));
-    sock.close();
-}
-
-
-function sendMsg(message, type) {
-    if(type == 'warn') {
-        var chatBoard = $('#chatBoard');
-        var message = $('<div class="msg warn">').text(message);
-        chatBoard.append(message);
-    } else if(type == 'NOTI-JOIN') {
-        var chatBoard = $('#chatBoard');
-        var message = $('<div class="msg warn">').text(message);
-        chatBoard.append(message);
+    sock.onclose = function () {
     }
+
 }
+
 
 $(function() {
     window.chatId = $('#chatId').val();
-
-    window.onbeforeunload = close;
-
+    window.onbeforeunload = function() {
+        var messageBody = {type: 'UNLOAD', chatId: window.chatId, connId: window.connId};
+        send(messageBody);
+    };
 
     $('input[name=inpMessage]').keypress(function (event) {
         if(event.which == 13) {
             var message = $('input[name=inpMessage]').val();
-            var messageBody = { type: 'SEND', message: message, nickname: window.nickname, chatId: window.chatId};
+            var messageBody = {type: 'SEND', message: message, nickname: window.nickname, chatId: window.chatId};
 
-            sock.send(JSON.stringify(messageBody));
+            send(messageBody);
             $('input[name=inpMessage]').val('');
         }
     });
@@ -93,10 +92,12 @@ $(function() {
         var now = moment();
         if(now > timeout) {
             clearInterval(interval);
-            sendMsg('char room was closed', 'warn');
+            console.log('char room was timeouted.');
             $('input[name=inpMessage]').remove();
             $('#remainTime').text('close after ' + moment.utc(0).format('HH:mm:ss'));
-            close();
+            var messageBody = {type: 'TIMEOUT', chatId: window.chatId}
+            sock.send(JSON.stringify(messageBody));
+            sock.close();
         } else {
             $('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
         }
@@ -104,7 +105,6 @@ $(function() {
     }
 
     var interval = setInterval(timer, 1000);
-
 
     initSock();
 });

@@ -1,26 +1,26 @@
 extends layout
-script(src="/javascripts/chat.js").
 block content
+  script(src="/javascripts/chat.js").
 
-input#chatId(type='hidden', value='#{chatId}')
-    
-div
-  input#timeout(type='hidden', value='#{timeout}')
-  div#remainTime
+  input#chatId(type='hidden', value='#{chatId}')
+      
+  div
+    input#timeout(type='hidden', value='#{timeout}')
+    div#remainTime
 
 
 #chatBoard
 
-input(type='text', name='inpMessage')
+  input(type='text', name='inpMessage')
 
-div.hidden
-  div.message-container.my-message
-    div.name
-    div.talk-bubble.tri-right.right-in
-      div.talktext
-        p
-  div.message-container.your-message
-    div.talk-bubble.tri-right.left-in
-    div.name
-      div.talktext
-        p
+  div.hidden
+    div.message-container.my-message
+      div.name
+      div.talk-bubble.tri-right.right-in
+        div.talktext
+          p
+    div.message-container.your-message
+      div.talk-bubble.tri-right.left-in
+      div.name
+        div.talktext
+          p
