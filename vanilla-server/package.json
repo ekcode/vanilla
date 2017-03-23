@@ -1,23 +1,35 @@
 {
-  "name": "site",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
-  "dependencies": {
-    "body-parser": "~1.16.0",
-    "cookie-parser": "~1.4.3",
-    "debug": "~2.6.0",
-    "express": "~4.14.1",
-    "express-less": "^0.1.0",
-    "jade": "~1.11.0",
-    "less-middleware": "^2.2.0",
-    "lodash": "^4.17.4",
-    "moment": "^2.17.1",
-    "morgan": "~1.7.0",
-    "redis": "^2.6.5",
-    "serve-favicon": "~2.3.2",
-    "uuid": "^3.0.1"
-  }
+    "scripts": {
+        "build": "webpack",
+        "start": "node ./bin/www"
+    },
+    "name": "chat-core",
+    "version": "1.0.0",
+    "description": "chat core application",
+    "main": "chat-core.js",
+    "author": "ekcode",
+    "license": "MIT",
+    "private": true,
+    "devDependencies": {
+        "ts-loader": "^2.0.3",
+        "typescript": "^2.2.1",
+        "webpack": "^2.3.1"
+    },
+    "dependencies": {
+        "@types/lodash": "^4.14.57",
+        "body-parser": "~1.16.0",
+        "cookie-parser": "~1.4.3",
+        "debug": "~2.6.0",
+        "express": "~4.14.1",
+        "express-less": "^0.1.0",
+        "less-middleware": "^2.2.0",
+        "lodash": "^4.17.4",
+        "moment": "^2.17.1",
+        "morgan": "~1.7.0",
+        "pug": "^2.0.0-beta11",
+        "redis": "^2.6.5",
+        "serve-favicon": "~2.3.2",
+        "uuid": "^3.0.1",
+        "vue": "^2.2.4"
+    }
 }
