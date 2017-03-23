@@ -14,6 +14,7 @@ db.on('connect', function() {
 
 var connections = {};
 
+
 echo.on('connection', function(conn) {
 
     connections[conn.id] = conn;
