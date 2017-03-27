@@ -1,7 +1,6 @@
 var http = require('http');
 var sockjs = require('sockjs');
 var redis = require('redis');
-var _ = require('lodash');
 
 
 var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
@@ -25,12 +24,6 @@ var handlers = {
     },
 
     join: function(conn, data) {
-        var res = {
-            connId : data.connId,
-            type : data.type,
-            nickname : data.nickname
-        }
-
         db.get('chat_' + data.chatId, function(err, reply) {
             var memberList = JSON.parse(reply);
 
