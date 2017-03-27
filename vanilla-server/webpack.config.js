@@ -4,7 +4,9 @@ module.exports = {
     entry: "./public/javascripts/chat-core.ts",
     output: {
         filename: "chat-core.js",
-        path: path.resolve(__dirname, 'public/javascripts/')
+        path: path.resolve(__dirname, 'public/javascripts/'),
+        libraryTarget: 'var',
+        library: 'C'
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"]

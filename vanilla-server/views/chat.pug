@@ -1,11 +1,10 @@
 extends layout
 block content
   script(src="/javascripts/chat-core.js").
+  script.
+    C.init('#{chatId}', '#{timeout}');
 
-  input#chatId(type='hidden', value='#{chatId}')
-      
   div
-    input#timeout(type='hidden', value='#{timeout}')
     div#remainTime
 
 
