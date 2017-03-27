@@ -25,14 +25,20 @@ var handlers = {
 
     join: function(conn, data) {
         db.get('chat_' + data.chatId, function(err, reply) {
-            var memberList = JSON.parse(reply);
+            var userList = JSON.parse(reply);
+            var user = {
+                connId: data.connId,
+                nickname: data.nickname
+            };
+            userList.push(user);
 
 
-            memberList.forEach(function (c, key) {
+            userList.forEach(function (c, key) {
                 var res = {
                     type:'notiJoin',
-                    nickname : data.nickname,
-                    connId : conn.id
+                    nickname: data.nickname,
+                    connId: conn.id,
+                    userList: userList
                 };
 
                 if(connections[c.connId]) {
@@ -40,20 +46,15 @@ var handlers = {
                 }
             });
 
-            var member = {
-                connId: data.connId,
-                nickname: data.nickname
-            };
-            memberList.push(member);
 
-            db.set('chat_' + data.chatId, JSON.stringify(memberList));
+            db.set('chat_' + data.chatId, JSON.stringify(userList));
         });
     },
 
     send: function(conn, data) {
         db.get('chat_' + data.chatId, function(err, reply) {
-            var memberList = JSON.parse(reply);
-            memberList.forEach(function (c, key) {
+            var userList = JSON.parse(reply);
+            userList.forEach(function (c, key) {
                 var res = {
                     type: 'send',
                     nickname : data.nickname,
@@ -75,21 +76,21 @@ var handlers = {
 
 
         db.get('chat_' + data.chatId, function(err, reply) {
-            var memberList = JSON.parse(reply);
+            var userList = JSON.parse(reply);
             var res = {
                 type: 'notiUnload'
             };
-            var unloadMember = memberList.filter(function(member) { return member.connId == conn.id } );
-            memberList = memberList.filter(function(member) { return member.connId != conn.id } );
-            db.set('chat_' + data.chatId, JSON.stringify(memberList));
+            var unloaduser = userList.filter(function(user) { return user.connId == conn.id } );
+            userList = userList.filter(function(user) { return user.connId != conn.id } );
+            db.set('chat_' + data.chatId, JSON.stringify(userList));
 
 
-            res.memberList = memberList;
-            res.unloadMember = unloadMember;
+            res.userList = userList;
+            res.unloaduser = unloaduser;
 
-            memberList.forEach(function (member, key) {
-                if(connections[member.connId]) {
-                    connections[member.connId].write(JSON.stringify(res));
+            userList.forEach(function (user, key) {
+                if(connections[user.connId]) {
+                    connections[user.connId].write(JSON.stringify(res));
                 }
             });
         });
