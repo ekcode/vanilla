@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import * as $ from 'jquery';
 
 
-var sock = new SockJS('http://127.0.0.1:9999/echo');
+var sock = new SockJS('http://172.27.68.53:9999/echo');
 
 var chatId: string;
 var nickname: string;
@@ -19,11 +19,11 @@ export function init(_chatId: string, timeout: string) {
         if(now > timeout) {
             console.log('>> timeouted');
             clearInterval(interval);
-            $('#remainTime').text('close after ' + moment.utc(0).format('HH:mm:ss'));
+            //$('#remainTime').text('close after ' + moment.utc(0).format('HH:mm:ss'));
             send({type: 'timeout'});
             sock.close();
         } else {
-            $('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
+            //$('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
         }
 
     }
@@ -31,6 +31,22 @@ export function init(_chatId: string, timeout: string) {
     let interval = setInterval(timer.bind(null, timeout), 1000);
 
 }
+
+
+
+
+window.onload = function() {
+
+    $('input[name=inp-text]').keypress(function(e) {
+        if(e.which == 13) {
+            var message = $('input[name=inp-text]').val();
+            if(message) { send({type: 'send', message: message}); }
+            $('input[name=inp-text]').val('');
+        });
+    }
+
+}
+
 
 enum Types {
     init, join, joinNoti, unload, unloadNoti, send, timeout
@@ -52,6 +68,13 @@ let send = function(obj: MessageBody) {
     sock.send(JSON.stringify(obj));
 }
 
+let updateUserList = function(userList: any[]) {
+    $('.userList').empty();
+    userList.forEach(function(user) {
+      $('.userList').append(`<span class="tag is-dark user-tag">${user.nickname}</span>`);
+    });
+}
+
 let messageHandler =  {
     join: function(data) {
         console.log('>> join');
@@ -63,11 +86,13 @@ let messageHandler =  {
     notiJoin: function(data) {
         console.log('>> notiJoin');
         console.log(data);
+        updateUserList(data.userList);
     },
 
     notiUnload: function(data) {
         console.log('>> notiUnload');
         console.log(data);
+        updateUserList(data.userList);
     },
 
     send: function(data) {

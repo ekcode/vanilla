@@ -65,3 +65,98 @@ body {
   }
 }
 
+// userList
+.section.userList {
+  background-color: transparent;
+  position: fixed;
+  top: 60px;
+  padding: 0.5rem 1.5rem;
+  opacity: 1;
+  .user-tag {
+    margin-right: 4px;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: .7rem;
+  }
+}
+
+// messageList
+.section.messageList {
+  padding-bottom: 70px
+}
+
+// inputBox
+.section.inputBox {
+  position: fixed;
+  width: 100%;
+  bottom: 0px;
+  padding: 5px;
+}
+
+
+
+// balloon
+.messageList {
+  .balloon {
+    .column {
+      width: 100%;
+    }
+  }
+
+  .my-message {
+    text-align: right;
+  }
+
+  .talk-bubble {
+    .talktext {
+      padding: 0.4em;
+      text-align: left;
+      line-height: 1.5em;
+      p {
+        font-family: Verdana, Arial, sans-serif;
+        -webkit-margin-before: 0em;
+        -webkit-margin-after: 0em;
+      }
+    }
+    margin: 10px;
+    display: inline-block;
+    position: relative;
+    width: auto;
+    min-width: 150px;
+    height: auto;
+    background-color: gray;
+  }
+
+  .round{
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+
+  }
+
+  .tri-right.right-in:after{
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -15px;
+    top: 0px;
+    bottom: auto;
+    border: 10px solid;
+    border-color: gray transparent transparent gray;
+  }
+
+  .tri-right.left-in:after{
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -15px;
+    right: auto;
+    top: 0px;
+    bottom: auto;
+    border: 10px solid;
+    border-color: gray gray transparent transparent;
+  }
+
+}
