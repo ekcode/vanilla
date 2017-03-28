@@ -79,8 +79,8 @@ body {
   }
 }
 
-// messageList
-.section.messageList {
+// message-list
+.section.message-list {
   padding-bottom: 70px
 }
 
@@ -92,71 +92,82 @@ body {
   padding: 5px;
 }
 
-
-
 // balloon
-.messageList {
-  .balloon {
-    .column {
-      width: 100%;
-    }
-  }
+.message-list {
+  @balloon-background-color: #ddd;
 
-  .my-message {
-    text-align: right;
-  }
-
-  .talk-bubble {
-    .talktext {
-      padding: 0.4em;
-      text-align: left;
-      line-height: 1.5em;
-      p {
-        font-family: Verdana, Arial, sans-serif;
-        -webkit-margin-before: 0em;
-        -webkit-margin-after: 0em;
-      }
-    }
-    margin: 10px;
-    display: inline-block;
-    position: relative;
-    width: auto;
-    min-width: 150px;
-    height: auto;
-    background-color: gray;
-  }
-
-  .round{
+  .round() {
     border-radius: 3px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
-
   }
 
-  .tri-right.right-in:after{
+  .talktext() {
+    padding: 0.4em;
+    text-align: left;
+    line-height: 1.5em;
+    font-family: Verdana, Arial, sans-serif;
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+    font-size: 0.9rem;
+    word-wrap: break-word;
+  }
+
+  .balloon-base() {
+    margin: 10px;
+    display: inline-block;
+    position: relative;
+    max-width: 350px;
+    min-width: 150px;
+    height: auto;
+    background-color: @balloon-background-color;
+  }
+
+
+  .tri-right() {
     content: ' ';
     position: absolute;
     width: 0;
     height: 0;
-    left: auto;
-    right: -15px;
     top: 0px;
     bottom: auto;
     border: 10px solid;
-    border-color: gray transparent transparent gray;
   }
 
-  .tri-right.left-in:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -15px;
-    right: auto;
-    top: 0px;
-    bottom: auto;
-    border: 10px solid;
-    border-color: gray gray transparent transparent;
-  }
+  .column {
+    .message-parent {
+      width: 100%;
+      .my-message {
+        .balloon-base;
+        .round;
+        text-align: right;
+        .talk-bubble.tri-right.right-in:after{
+          .tri-right;
+          left: auto;
+          right: -15px;
+          border-color: @balloon-background-color transparent transparent @balloon-background-color;
+        }
+        .talktext {
+          .talktext;
+        }
+      }
 
+      .not-my-message {
+        .balloon-base;
+        .round;
+        .talk-bubble.tri-right.left-in:after{
+          .tri-right;
+          left: -15px;
+          right: auto;
+          border-color: @balloon-background-color @balloon-background-color transparent transparent;
+        }
+        .talktext {
+          .talktext;
+        }
+      }
+    }
+    .message-parent.my-message {
+      text-align: right;
+    }
+  }
 }

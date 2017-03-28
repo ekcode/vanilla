@@ -42,8 +42,8 @@ window.onload = function() {
             var message = $('input[name=inp-text]').val();
             if(message) { send({type: 'send', message: message}); }
             $('input[name=inp-text]').val('');
-        });
-    }
+        }
+    });
 
 }
 
@@ -71,7 +71,7 @@ let send = function(obj: MessageBody) {
 let updateUserList = function(userList: any[]) {
     $('.userList').empty();
     userList.forEach(function(user) {
-      $('.userList').append(`<span class="tag is-dark user-tag">${user.nickname}</span>`);
+        $('.userList').append(`<span class="tag is-dark user-tag">${user.nickname}</span>`);
     });
 }
 
@@ -99,20 +99,34 @@ let messageHandler =  {
         console.log('>> send');
         console.log(data);
         if(data.connId == connId) {
-            console.log('my message');
+            $('.message-list .column').append(`
+                <div class="message-parent my-message"><div class="message-container my-message">
+                    <div class="name"></div>
+                    <div class="talk-bubble tri-right right-in round">
+                        <div class="talktext">${data.message}</div></div></div>`);
         } else {
-            console.log('not my message');
+            $('.message-list .column').append(`
+                <div class="message-parent"><div class="message-container not-my-message">
+                    <div class="name"></div>
+                    <div class="talk-bubble tri-right left-in round">
+                        <div class="talktext">${data.message}</div></div></div>`);
         }
+
+        scrollDown();
     }
 
 }
 
+let scrollDown = function () {
+    window.scrollTo(0,document.body.scrollHeight);
+}
 
 let sockHandlers = {
     onopen: function(): void {
         console.log('>> init');
-        nickname = getNickname()
-        send({type: Types[Types.init]})
+        nickname = getNickname();
+        send({type: Types[Types.init]});
+        $('.nav-nickname').text(nickname);
     },
 
     onmessage: function(res): void {
@@ -136,6 +150,7 @@ function initSock(): void {
 
 
 function getNickname(): string {
+    let nickname = localStorage.getItem('nickname');
     let names: string[] = [
         'Rory McIlroy', 'Jason Day', 'Hideki Matsuyama'
         ,'Henrik Stenson', 'Jordan Spieth', 'Justin Thomas'
@@ -146,9 +161,16 @@ function getNickname(): string {
         ,'Matt Kuchar', 'Russell Knox', 'Jimmy Walker'
         ,'Brandt Snedeker', 'Brooks Koepka', 'Jon Rahm'];
 
-    return names[Math.floor(Math.random() * names.length)];
+    return nickname ? nickname : names[Math.floor(Math.random() * names.length)];
 }
 
-window.onbeforeunload = function() {
+
+function close() {
+    console.log('bye');
     send({type: 'unload'});
+}
+if('onbeforeunload' in window) {
+    window.onbeforeunload = close;
+} else {
+    window.onunload = close;
 }

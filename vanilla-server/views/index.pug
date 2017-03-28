@@ -15,19 +15,19 @@ block content
             .column.is-three-quarters SET YOUR NAME
               .field
                 p.control
-                  input.input.is-primary(type="text", value="")
+                  input.input.is-primary(type="text", name="nickname", maxlength="30")
             .column
 
       .columns
         .column
           form(id='target', action='/create', method='post')
             .field
-              .columns.is-multiline.is-mobile
+              .columns.is-mobile
                 .column
                 .column.is-three-quarters.big-text EXPIRES IN
                   progress.progress.is-small(value="15", max="100") 15%
                 .column
-              .columns.is-multiline.is-mobile
+              .columns.is-mobile
                 .column
                 .column
                   .select
@@ -82,3 +82,12 @@ block content
           div.sha
             | 0f259ee1f7268636adf4fb7ce1b12f2e7229c968
 
+  script.
+    var nickname = localStorage.getItem('nickname');
+    if(nickname) {
+        $('input[name=nickname]').val(nickname);
+    }
+
+    $('input[name=nickname]').keypress(function(e) {
+        localStorage.setItem('nickname', this.value);
+    })
