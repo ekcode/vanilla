@@ -71,18 +71,38 @@ var handlers = {
 
     },
 
-    unload: function(conn, data) {
+    timeout: function(conn, data) {
+        delete connections[conn.id];
+        db.del(['chat_' + data.chatId, 'timeout_' + data.chatId]);
+    }
+
+}
+
+echo.on('connection', function(conn) {
+    console.log(conn.url);
+
+    connections[conn.id] = conn;
+
+    conn.on('data', function(receiveData) {
+        var data = JSON.parse(receiveData);
+        handlers[data.type](conn, data);
+    });
+
+    conn.on('close', function() {
+        console.log('close');
+        var chatId = conn.pathname.substr(conn.pathname.indexOf('_') + 1, 5)
+
         delete connections[conn.id];
 
 
-        db.get('chat_' + data.chatId, function(err, reply) {
+        db.get('chat_' + chatId, function(err, reply) {
             var userList = JSON.parse(reply);
             var res = {
                 type: 'notiUnload'
             };
             var unloaduser = userList.filter(function(user) { return user.connId == conn.id } );
             userList = userList.filter(function(user) { return user.connId != conn.id } );
-            db.set('chat_' + data.chatId, JSON.stringify(userList));
+            db.set('chat_' + chatId, JSON.stringify(userList));
 
 
             res.userList = userList;
@@ -94,26 +114,6 @@ var handlers = {
                 }
             });
         });
-
-    },
-
-    timeout: function(conn, data) {
-        delete connections[conn.id];
-        db.del(['chat_' + data.chatId, 'timeout_' + data.chatId]);
-    }
-
-}
-
-echo.on('connection', function(conn) {
-
-    connections[conn.id] = conn;
-
-    conn.on('data', function(receiveData) {
-        var data = JSON.parse(receiveData);
-        handlers[data.type](conn, data);
-    });
-
-    conn.on('close', function() {
     });
 
 });

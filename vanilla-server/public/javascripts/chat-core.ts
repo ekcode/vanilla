@@ -3,7 +3,9 @@ import * as moment from 'moment';
 import * as $ from 'jquery';
 
 
-var sock = new SockJS('http://172.27.68.53:9999/echo');
+var sock = null;
+//var sock = new SockJS('http://127.0.0.1:9999/echo');
+//var sock = new SockJS('http://192.168.25.6:9999/echo');
 
 var chatId: string;
 var nickname: string;
@@ -11,6 +13,9 @@ var connId: string;
 
 export function init(_chatId: string, timeout: string) {
     chatId = _chatId;
+    sock = new SockJS('http://172.27.68.53:9999/echo', null, {sessionId: function() {
+        return new Date().getTime() + "_" + chatId; 
+    }});
     initSock();
 
     function timer(_timeout: string) {
@@ -151,26 +156,21 @@ function initSock(): void {
 
 function getNickname(): string {
     let nickname = localStorage.getItem('nickname');
-    let names: string[] = [
-        'Rory McIlroy', 'Jason Day', 'Hideki Matsuyama'
-        ,'Henrik Stenson', 'Jordan Spieth', 'Justin Thomas'
-        ,'Adam Scott', 'Rickie Fowler', 'Sergio Garcia'
-        ,'Alex Noren', 'Patrick Reed', 'Justin Rose'
-        ,'Tyrrell Hatton', 'Danny Willett', 'Paul Casey'
-        ,'Bubba Watson', 'Phil Mickelson', 'Branden Grace'
-        ,'Matt Kuchar', 'Russell Knox', 'Jimmy Walker'
-        ,'Brandt Snedeker', 'Brooks Koepka', 'Jon Rahm'];
 
-    return nickname ? nickname : names[Math.floor(Math.random() * names.length)];
+    
+    return nickname ? nickname : (function(){
+        let names: string[] = [
+            'Rory McIlroy', 'Jason Day', 'Hideki Matsuyama'
+            ,'Henrik Stenson', 'Jordan Spieth', 'Justin Thomas'
+            ,'Adam Scott', 'Rickie Fowler', 'Sergio Garcia'
+            ,'Alex Noren', 'Patrick Reed', 'Justin Rose'
+            ,'Tyrrell Hatton', 'Danny Willett', 'Paul Casey'
+            ,'Bubba Watson', 'Phil Mickelson', 'Branden Grace'
+            ,'Matt Kuchar', 'Russell Knox', 'Jimmy Walker'
+            ,'Brandt Snedeker', 'Brooks Koepka', 'Jon Rahm'];
+        let nickname = names[Math.floor(Math.random() * names.length)];
+        localStorage.setItem('nickname', nickname);
+        return nickname;
+    })();
 }
 
-
-function close() {
-    console.log('bye');
-    send({type: 'unload'});
-}
-if('onbeforeunload' in window) {
-    window.onbeforeunload = close;
-} else {
-    window.onunload = close;
-}
