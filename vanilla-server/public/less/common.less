@@ -15,6 +15,9 @@ body {
 
 .nav {
   border-bottom: solid 1px @theme-color;
+  position: fixed;
+  top: 0px;
+  width: 100%;
 }
 
 .logo-side-icon {
@@ -67,11 +70,12 @@ body {
 
 // userList
 .section.userList {
+  z-index: 100;
   background-color: transparent;
   position: fixed;
   top: 60px;
   padding: 0.5rem 1.5rem;
-  opacity: 1;
+  opacity: 0.7;
   .user-tag {
     margin-right: 4px;
     font-family: Verdana, Arial, sans-serif;
@@ -81,6 +85,7 @@ body {
 
 // message-list
 .section.message-list {
+  z-index: 200;
   padding-bottom: 70px
 }
 
