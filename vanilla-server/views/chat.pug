@@ -5,7 +5,6 @@ block content
     C.init('#{chatId}', '#{timeout}');
 
 
-
   section.section.userList
     .container
       .columns
@@ -17,16 +16,19 @@ block content
         .column
           article.message.is-primary.message-usage
             .message-body
-              p.bold Hi! 
+              .bold Hi. 
                 span.nickname-in-message
-              p
-              p This chat room expires in 
+              .content This chat room expires in 
                 span.timeout-in-message
-              p
-                a Click hear
-                span to copy the url of this room
-              p and share it with your friends.
-              p Enjoy it!
+              .field.has-addons
+                p.control
+                  input.input.is-small(type='text', id='inp-clipboard', name='inp-clipboard')
+                p.control
+                  a.button.is-small.btn-copy(name='btn-copy', data-clipboard-target='#inp-clipboard') Copy
+              p Invite your friends using the URL above.
+              br
+              p We do not store any messages you sent and received.
+              p Enjoy it :)
 
       .columns.is-gapless.is-mobile.message-list
         .column

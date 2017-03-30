@@ -1,6 +1,7 @@
 import * as SockJS from 'sockjs-client';
 import * as moment from 'moment';
 import * as $ from 'jquery';
+import * as Clipboard from 'clipboard';
 
 
 var sock = null;
@@ -65,6 +66,10 @@ window.onload = function() {
     $('a[name=btn-nickname]').click(function(e) {
         enter();
     })
+
+    $('input[name=inp-clipboard]').val('http://127.0.0.1:3000/c/' + chatId);
+
+    new Clipboard('.btn-copy');
 }
 
 
