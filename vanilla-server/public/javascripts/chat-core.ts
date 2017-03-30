@@ -125,16 +125,17 @@ let messageHandler =  {
         console.log(data);
         if(data.connId == connId) {
             $('.message-list .column').append(`
-                <div class="message-parent my-message"><div class="message-container my-message">
-                    <div class="name"></div>
-                    <div class="talk-bubble tri-right right-in round">
-                        <div class="talktext">${data.message}</div></div></div>`);
+                <div class="message-parent my-message">
+                    <div class="message-container my-message">
+                        <div class="talk-bubble tri-right right-in round">
+                            <div class="talktext">${data.message}</div></div></div></div>`);
         } else {
             $('.message-list .column').append(`
-                <div class="message-parent"><div class="message-container not-my-message">
-                    <div class="name"></div>
-                    <div class="talk-bubble tri-right left-in round">
-                        <div class="talktext">${data.message}</div></div></div>`);
+                <div class="message-parent">
+                    <div class="balloon-nickname">${data.nickname}</div>
+                    <div class="message-container not-my-message">
+                        <div class="talk-bubble tri-right left-in round">
+                            <div class="talktext">${data.message}</div></div></div></div>`);
         }
 
         scrollDown();
