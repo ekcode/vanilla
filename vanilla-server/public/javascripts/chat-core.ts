@@ -4,8 +4,6 @@ import * as $ from 'jquery';
 
 
 var sock = null;
-//var sock = new SockJS('http://127.0.0.1:9999/echo');
-//var sock = new SockJS('http://192.168.25.6:9999/echo');
 
 var chatId: string;
 var nickname: string;
@@ -13,8 +11,9 @@ var connId: string;
 
 export function init(_chatId: string, timeout: string) {
     chatId = _chatId;
-    sock = new SockJS('http://172.27.68.53:9999/echo', null, {sessionId: function() {
-        return new Date().getTime() + "_" + chatId; 
+    sock = new SockJS('http://127.0.0.1:9999/echo', null, {sessionId: function() {
+        //sock = new SockJS('http://172.27.68.53:9999/echo', null, {sessionId: function() {
+        return new Date().getTime() + "_" + chatId;
     }});
     initSock();
 
@@ -24,11 +23,11 @@ export function init(_chatId: string, timeout: string) {
         if(now > timeout) {
             console.log('>> timeouted');
             clearInterval(interval);
-            //$('#remainTime').text('close after ' + moment.utc(0).format('HH:mm:ss'));
+            displayTimeout(0, 0);
             send({type: 'timeout'});
             sock.close();
         } else {
-            //$('#remainTime').text('close after ' + moment.utc(timeout - now).format('HH:mm:ss'));
+            displayTimeout(timeout, now);
         }
 
     }
@@ -38,18 +37,34 @@ export function init(_chatId: string, timeout: string) {
 }
 
 
+let displayTimeout = function(timeout, now): void {
+    $('.timeout-in-message').text(moment.utc(timeout - now).format('HH:mm:ss'));
+}
+
 
 
 window.onload = function() {
 
+    function clickSend() {
+        var message = $('input[name=inp-text]').val();
+        if(message) { send({type: 'send', message: message}); }
+        $('input[name=inp-text]').val('');
+
+    }
+
     $('input[name=inp-text]').keypress(function(e) {
         if(e.which == 13) {
-            var message = $('input[name=inp-text]').val();
-            if(message) { send({type: 'send', message: message}); }
-            $('input[name=inp-text]').val('');
+            clickSend();
         }
     });
 
+    $('a[name=btn-send]').click(function(e) {
+        clickSend();
+    })
+
+    $('a[name=btn-nickname]').click(function(e) {
+        enter();
+    })
 }
 
 
@@ -129,9 +144,7 @@ let scrollDown = function () {
 let sockHandlers = {
     onopen: function(): void {
         console.log('>> init');
-        nickname = getNickname();
-        send({type: Types[Types.init]});
-        $('.nav-nickname').text(nickname);
+        openHandler();
     },
 
     onmessage: function(res): void {
@@ -154,23 +167,51 @@ function initSock(): void {
 }
 
 
-function getNickname(): string {
-    let nickname = localStorage.getItem('nickname');
+function sendInit(nickname: string): void {
+    send({type: Types[Types.init]});
+    $('.nickname-modal').removeClass('is-active');
+    $('.nav-nickname').text(nickname);
+    $('.nickname-in-message').text(nickname);
 
-    
-    return nickname ? nickname : (function(){
-        let names: string[] = [
-            'Rory McIlroy', 'Jason Day', 'Hideki Matsuyama'
-            ,'Henrik Stenson', 'Jordan Spieth', 'Justin Thomas'
-            ,'Adam Scott', 'Rickie Fowler', 'Sergio Garcia'
-            ,'Alex Noren', 'Patrick Reed', 'Justin Rose'
-            ,'Tyrrell Hatton', 'Danny Willett', 'Paul Casey'
-            ,'Bubba Watson', 'Phil Mickelson', 'Branden Grace'
-            ,'Matt Kuchar', 'Russell Knox', 'Jimmy Walker'
-            ,'Brandt Snedeker', 'Brooks Koepka', 'Jon Rahm'];
-        let nickname = names[Math.floor(Math.random() * names.length)];
-        localStorage.setItem('nickname', nickname);
-        return nickname;
-    })();
+}
+
+function openHandler(): void {
+    nickname = localStorage.getItem('nickname');
+
+    if(!nickname) {
+        $('.nickname-modal').addClass('is-active');
+    } else {
+        sendInit(nickname);
+    }
+
+
+
+}
+
+function enter(): void {
+    nickname = $('.inp-nickname').val() || getRandomNickname();
+    localStorage.setItem('nickname', nickname);
+    sendInit(nickname);
+}
+
+
+function getRandomNickname(): string {
+
+    const names: string[] = [
+        'Ryu So Yeon' ,'Jutanugarn Ariya' ,'Lee Mirim'
+        ,'Jang Ha Na' ,'Nordqvist Anna' ,'Park Inbee'
+        ,'Lincicome Brittany' ,'Yang Amy' ,'Ernst Austin'
+        ,'Lewis Stacy' ,'Thompson Lexi' ,'Chun In Gee'
+        ,'Park Sung Hyun' ,'Jutanugarn Moriya' ,'Piller Gerina'
+        ,'Rory McIlroy', 'Jason Day', 'Hideki Matsuyama'
+        ,'Henrik Stenson', 'Jordan Spieth', 'Justin Thomas'
+        ,'Adam Scott', 'Rickie Fowler', 'Sergio Garcia'
+        ,'Alex Noren', 'Patrick Reed', 'Justin Rose'
+        ,'Tyrrell Hatton', 'Danny Willett', 'Paul Casey'
+        ,'Bubba Watson', 'Phil Mickelson', 'Branden Grace'
+        ,'Matt Kuchar', 'Russell Knox', 'Jimmy Walker'
+        ,'Brandt Snedeker', 'Brooks Koepka', 'Jon Rahm'];
+
+    return names[Math.floor(Math.random() * names.length)];
 }
 

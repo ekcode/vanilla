@@ -1,6 +1,6 @@
 extends layout
 block content
-  section.hero.is-primary
+  section.hero.is-primary.site-title
     .hero-body
       .container
         h1.title Create chat room
@@ -88,6 +88,7 @@ block content
         $('input[name=nickname]').val(nickname);
     }
 
-    $('input[name=nickname]').keypress(function(e) {
+    $('input[name=nickname]').on('change', function(e) {
         localStorage.setItem('nickname', this.value);
     })
+

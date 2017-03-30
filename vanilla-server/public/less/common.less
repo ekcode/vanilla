@@ -5,14 +5,15 @@
 }
 
 html {
-  height: 100%;
 }
 
 body {
   margin: 0;
-  height: 100%;
 }
 
+.site-title {
+  margin-top: 52px;
+}
 .nav {
   border-bottom: solid 1px @theme-color;
   position: fixed;
@@ -61,12 +62,28 @@ body {
   font-size: 0.7rem;
 }
 
+.message-font() {
+  font-family: Verdana, Arial, sans-serif;
+}
+
+.message-usage {
+  margin: 60px 0 0 0;
+  p {
+    .message-font;
+  }
+}
+
 .message-body {
-  li {
-    font-family: Verdana, Arial, sans-serif;
+  * {
+    .message-font;
     font-size: 0.8rem;
   }
 }
+
+.is-comment {
+  color: gray;
+}
+
 
 // userList
 .section.userList {
@@ -78,7 +95,7 @@ body {
   opacity: 0.7;
   .user-tag {
     margin-right: 4px;
-    font-family: Verdana, Arial, sans-serif;
+    .message-font;
     font-size: .7rem;
   }
 }
@@ -111,7 +128,7 @@ body {
     padding: 0.4em;
     text-align: left;
     line-height: 1.5em;
-    font-family: Verdana, Arial, sans-serif;
+    .message-font;
     -webkit-margin-before: 0em;
     -webkit-margin-after: 0em;
     font-size: 0.9rem;

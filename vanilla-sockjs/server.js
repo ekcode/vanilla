@@ -25,7 +25,7 @@ var handlers = {
 
     join: function(conn, data) {
         db.get('chat_' + data.chatId, function(err, reply) {
-            var userList = JSON.parse(reply);
+            var userList = JSON.parse(reply) || [];
             var user = {
                 connId: data.connId,
                 nickname: data.nickname
@@ -53,7 +53,7 @@ var handlers = {
 
     send: function(conn, data) {
         db.get('chat_' + data.chatId, function(err, reply) {
-            var userList = JSON.parse(reply);
+            var userList = JSON.parse(reply) || [];
             userList.forEach(function (c, key) {
                 var res = {
                     type: 'send',
@@ -96,7 +96,7 @@ echo.on('connection', function(conn) {
 
 
         db.get('chat_' + chatId, function(err, reply) {
-            var userList = JSON.parse(reply);
+            var userList = JSON.parse(reply) || [];
             var res = {
                 type: 'notiUnload'
             };

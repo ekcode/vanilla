@@ -13,8 +13,24 @@ block content
 
   section.section
     .container
+      .columns.is-gapless.is-mobile
+        .column
+          article.message.is-primary.message-usage
+            .message-body
+              p.bold Hi! 
+                span.nickname-in-message
+              p
+              p This chat room expires in 
+                span.timeout-in-message
+              p
+                a Click hear
+                span to copy the url of this room
+              p and share it with your friends.
+              p Enjoy it!
+
       .columns.is-gapless.is-mobile.message-list
         .column
+        
 
   section.section.inputBox
     .container.inputBox
@@ -27,4 +43,17 @@ block content
               a.button.is-primary(name='btn-send') Send
   
 
+  .modal.nickname-modal
+    .modal-background
+    .modal-content
+      .box
+        h1.subtitle Enter your nickname. 
+        .field.has-addons
+          p.control.is-expanded
+            input.input.inp-nickname
+          p.control
+            a.button.is-primary(name='btn-nickname') Start
+        .content.is-small.is-comment If you do not enter a name, a random name will be used.
 
+        
+    button.modal-close
