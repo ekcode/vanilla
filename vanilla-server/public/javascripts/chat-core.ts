@@ -2,7 +2,8 @@ import * as SockJS from 'sockjs-client';
 import * as moment from 'moment';
 import * as $ from 'jquery';
 import * as Clipboard from 'clipboard';
-
+import * as linkify from 'linkifyjs';
+import * as linkifyHtml from 'linkifyjs/html';
 
 var sock = null;
 
@@ -12,8 +13,8 @@ var connId: string;
 
 export function init(_chatId: string, timeout: string) {
     chatId = _chatId;
-    sock = new SockJS('http://127.0.0.1:9999/echo', null, {sessionId: function() {
-        //sock = new SockJS('http://172.27.68.53:9999/echo', null, {sessionId: function() {
+    //sock = new SockJS('http://127.0.0.1:9999/echo', null, {sessionId: function() {
+    sock = new SockJS('http://172.27.68.53:9999/echo', null, {sessionId: function() {
         return new Date().getTime() + "_" + chatId;
     }});
     initSock();
@@ -138,6 +139,7 @@ let messageHandler =  {
                             <div class="talktext">${data.message}</div></div></div></div>`);
         }
 
+        $('.talktext:last').html(linkifyHtml($('.talktext:last').text()));
         scrollDown();
     }
 
