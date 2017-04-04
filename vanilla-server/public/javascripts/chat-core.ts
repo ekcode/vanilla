@@ -26,6 +26,7 @@ export function init(_chatId: string, timeout: string) {
             console.log('>> timeouted');
             clearInterval(interval);
             displayTimeout(0, 0);
+            disableTextInput();
             send({type: 'timeout'});
             sock.close();
         } else {
@@ -40,17 +41,20 @@ export function init(_chatId: string, timeout: string) {
 
 
 let displayTimeout = function(timeout, now): void {
-	if(timeout == 0) {
-		$('.message-list .column').append(`
-			<div class="message-parent noti-message">
-				<div class="message-container">
-					<div class="noti-message">chat timeouted</div></div></div>`);
-	
-	}
+    if(timeout == 0) {
+        $('.message-list .column').append(`
+            <div class="message-parent">
+                <div class="message-container">
+                    <div class="noti-message">chat timeouted</div></div></div>`);
+
+    }
     $('.timeout-in-message').text(moment.utc(timeout - now).format('HH:mm:ss'));
 }
 
 
+let disableTextInput = function(): void {
+    $('input[name=inp-text]').prop('disabled', true);
+}
 
 window.onload = function() {
 
@@ -72,10 +76,24 @@ window.onload = function() {
     })
 
     $('a[name=btn-nickname]').click(function(e) {
-        enter();
+        start();
     })
 
     $('input[name=inp-clipboard]').val('http://127.0.0.1:3000/c/' + chatId);
+
+    $('#nav-toggle').click(function(e) {
+        if($(this).hasClass('is-active')) {
+            $(this).removeClass('is-active')
+            $('.nav-menu').removeClass('is-active')
+        } else {
+            $(this).addClass('is-active')
+            $('.nav-menu').addClass('is-active')
+        }
+    });
+
+    $('#nav-about').click(function() {
+
+    });
 
     new Clipboard('.btn-copy');
 }
@@ -120,12 +138,12 @@ let messageHandler =  {
         console.log('>> notiJoin');
         console.log(data);
 
-		if(data.connId != connId) {
+        if(data.connId != connId) {
             $('.message-list .column').append(`
                 <div class="message-parent">
                     <div class="message-container">
                         <div class="noti-message">${data.nickname} joined</div></div></div>`);
-		}
+        }
 
 
         updateUserList(data.userList);
@@ -134,10 +152,10 @@ let messageHandler =  {
     notiUnload: function(data) {
         console.log('>> notiUnload');
         console.log(data);
-		$('.message-list .column').append(`
-			<div class="message-parent">
-				<div class="message-container">
-					<div class="noti-message">${data.nickname} leaved</div></div></div>`);
+        $('.message-list .column').append(`
+            <div class="message-parent">
+                <div class="message-container">
+                    <div class="noti-message">${data.nickname} leaved</div></div></div>`);
 
         updateUserList(data.userList);
     },
@@ -199,7 +217,6 @@ function initSock(): void {
 function sendInit(nickname: string): void {
     send({type: Types[Types.init]});
     $('.nickname-modal').removeClass('is-active');
-    $('.nav-nickname').text(nickname);
     $('.nickname-in-message').text(nickname);
 
 }
@@ -217,9 +234,13 @@ function openHandler(): void {
 
 }
 
-function enter(): void {
+function start(): void {
     nickname = $('.inp-nickname').val() || getRandomNickname();
-    localStorage.setItem('nickname', nickname);
+    try {
+        localStorage.setItem('nickname', nickname);
+    } catch(e) {
+        // safari does not allow local storage to be used on private browsing
+    }
     sendInit(nickname);
 }
 
