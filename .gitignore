@@ -97,3 +97,4 @@ typings/
 vanilla-server/public/less/*.css
 vanilla-server/yarn.lock
 
+yarn.lock
