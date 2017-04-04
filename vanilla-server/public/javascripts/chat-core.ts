@@ -14,7 +14,7 @@ var connId: string;
 export function init(_chatId: string, timeout: string) {
     chatId = _chatId;
     //sock = new SockJS('http://127.0.0.1:9999/echo', null, {sessionId: function() {
-    sock = new SockJS('ws://vanilla-sockjs.herokuapp.com:9999/echo', null, {sessionId: function() {
+    sock = new SockJS('https://vanilla-sockjs.herokuapp.com/echo', null, {sessionId: function() {
         return new Date().getTime() + "_" + chatId;
     }});
     initSock();

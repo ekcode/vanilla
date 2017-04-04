@@ -35504,7 +35504,7 @@ var connId;
 function init(_chatId, timeout) {
     chatId = _chatId;
     //sock = new SockJS('http://127.0.0.1:9999/echo', null, {sessionId: function() {
-    sock = new __WEBPACK_IMPORTED_MODULE_0_sockjs_client__('ws://vanilla-sockjs.herokuapp.com:9999/echo', null, { sessionId: function () {
+    sock = new __WEBPACK_IMPORTED_MODULE_0_sockjs_client__('https://vanilla-sockjs.herokuapp.com/echo', null, { sessionId: function () {
             return new Date().getTime() + "_" + chatId;
         } });
     initSock();
