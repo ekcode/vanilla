@@ -35553,7 +35553,7 @@ window.onload = function () {
     __WEBPACK_IMPORTED_MODULE_2_jquery__('a[name=btn-nickname]').click(function (e) {
         start();
     });
-    __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-clipboard]').val('http://127.0.0.1:3000/c/' + chatId);
+    __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-clipboard]').val(window.location.href);
     __WEBPACK_IMPORTED_MODULE_2_jquery__('#nav-toggle').click(function (e) {
         if (__WEBPACK_IMPORTED_MODULE_2_jquery__(this).hasClass('is-active')) {
             __WEBPACK_IMPORTED_MODULE_2_jquery__(this).removeClass('is-active');

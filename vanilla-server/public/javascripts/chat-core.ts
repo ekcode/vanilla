@@ -79,7 +79,7 @@ window.onload = function() {
         start();
     })
 
-    $('input[name=inp-clipboard]').val('http://127.0.0.1:3000/c/' + chatId);
+    $('input[name=inp-clipboard]').val(window.location.href);
 
     $('#nav-toggle').click(function(e) {
         if($(this).hasClass('is-active')) {
