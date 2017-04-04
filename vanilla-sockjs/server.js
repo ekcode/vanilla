@@ -124,5 +124,6 @@ echo.on('connection', function(conn) {
 var app = express();
 var server = http.createServer(app);
 echo.installHandlers(server, {prefix:'/echo'});
-server.listen(9999, '0.0.0.0');
+var port = process.env.PORT || 9999;
+server.listen(port, '0.0.0.0');
 
