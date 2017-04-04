@@ -1,7 +1,6 @@
 var http = require('http');
 var sockjs = require('sockjs');
 var redis = require('redis');
-var express = require('express');
 
 
 var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
@@ -121,8 +120,7 @@ echo.on('connection', function(conn) {
 
 
 
-var app = express();
-var server = http.createServer(app);
+var server = http.createServer();
 echo.installHandlers(server, {prefix:'/echo'});
 var port = process.env.PORT || 9999;
 server.listen(port, '0.0.0.0');
