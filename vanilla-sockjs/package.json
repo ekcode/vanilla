@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
-    "redis": "^2.7.0"
+    "redis": "^2.7.0",
+    "sockjs": "^0.3.18"
   },
   "description": "sockjs chat server",
   "main": "server.js",
