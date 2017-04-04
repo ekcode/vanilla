@@ -101,12 +101,12 @@ echo.on('connection', function(conn) {
                 type: 'notiUnload'
             };
             var unloaduser = userList.filter(function(user) { return user.connId == conn.id } );
+
             userList = userList.filter(function(user) { return user.connId != conn.id } );
             db.set('chat_' + chatId, JSON.stringify(userList));
 
-
             res.userList = userList;
-            res.unloaduser = unloaduser;
+            res.nickname = unloaduser[0] ? unloaduser[0].nickname : 'Ghost User';
 
             userList.forEach(function (user, key) {
                 if(connections[user.connId]) {

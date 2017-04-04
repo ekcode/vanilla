@@ -40,6 +40,13 @@ export function init(_chatId: string, timeout: string) {
 
 
 let displayTimeout = function(timeout, now): void {
+	if(timeout == 0) {
+		$('.message-list .column').append(`
+			<div class="message-parent noti-message">
+				<div class="message-container">
+					<div class="noti-message">chat timeouted</div></div></div>`);
+	
+	}
     $('.timeout-in-message').text(moment.utc(timeout - now).format('HH:mm:ss'));
 }
 
@@ -112,12 +119,26 @@ let messageHandler =  {
     notiJoin: function(data) {
         console.log('>> notiJoin');
         console.log(data);
+
+		if(data.connId != connId) {
+            $('.message-list .column').append(`
+                <div class="message-parent">
+                    <div class="message-container">
+                        <div class="noti-message">${data.nickname} joined</div></div></div>`);
+		}
+
+
         updateUserList(data.userList);
     },
 
     notiUnload: function(data) {
         console.log('>> notiUnload');
         console.log(data);
+		$('.message-list .column').append(`
+			<div class="message-parent">
+				<div class="message-container">
+					<div class="noti-message">${data.nickname} leaved</div></div></div>`);
+
         updateUserList(data.userList);
     },
 
