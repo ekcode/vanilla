@@ -4,7 +4,7 @@ var redis = require('redis');
 
 
 var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
-var db = redis.createClient();
+var db = redis.createClient('redis://h:p8dff5fb6823f11f843e975a45135dc5d518994ea6cf663333f4286eb79322349@ec2-34-206-56-163.compute-1.amazonaws.com:9769');
 
 db.on('connect', function() {
     console.log('redis connected');
