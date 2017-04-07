@@ -8,7 +8,7 @@ https://vanilla-server.herokuapp.com/
 ### Used libraries, frameworks, languages and tools list.
 - [expressjs](http://expressjs.com/)
 - [redis](https://redis.io/)
-- [ypescript](https://www.typescriptlang.org/)
+- [typescript](https://www.typescriptlang.org/)
 - [less](http://lesscss.org/)
 - [jquery](https://jquery.com/)
 - [moment](https://momentjs.com)
