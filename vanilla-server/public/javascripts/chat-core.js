@@ -35540,6 +35540,7 @@ var disableTextInput = function () {
     __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-text]').prop('disabled', true);
 };
 window.onload = function () {
+    __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-text]').prop('disabled', true);
     function clickSend() {
         var message = __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-text]').val();
         if (message) {
@@ -35655,6 +35656,7 @@ function sendInit(nickname) {
     send({ type: Types[Types.init] });
     __WEBPACK_IMPORTED_MODULE_2_jquery__('.nickname-modal').removeClass('is-active');
     __WEBPACK_IMPORTED_MODULE_2_jquery__('.nickname-in-message').text(nickname);
+    __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-text]').prop('disabled', false);
 }
 function openHandler() {
     nickname = localStorage.getItem('nickname');

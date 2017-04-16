@@ -67,6 +67,8 @@ let disableTextInput = function(): void {
 
 window.onload = function() {
 
+    $('input[name=inp-text]').prop('disabled', true);
+
     function clickSend() {
         var message = $('input[name=inp-text]').val();
         if(message) { send({type: 'send', message: message}); }
@@ -227,6 +229,7 @@ function sendInit(nickname: string): void {
     send({type: Types[Types.init]});
     $('.nickname-modal').removeClass('is-active');
     $('.nickname-in-message').text(nickname);
+    $('input[name=inp-text]').prop('disabled', false);
 
 }
 
