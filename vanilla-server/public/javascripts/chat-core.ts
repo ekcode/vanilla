@@ -48,7 +48,16 @@ let displayTimeout = function(timeout, now): void {
                     <div class="noti-message">chat timeouted</div></div></div>`);
 
     }
-    $('.timeout-in-message').text(moment.utc(timeout - now).format('HH:mm:ss'));
+
+    let remain = moment.utc(timeout - now);
+    $('.timeout-banner').text(remain.format('HH:mm:ss'));
+    $('.timeout-in-message').text(remain.format('HH:mm:ss'));
+
+    if(remain.subtract(1, 'minutes') < moment(0)) {
+        $('.timeout-banner').addClass('red');
+    }
+
+    
 }
 
 
@@ -120,9 +129,9 @@ let send = function(obj: MessageBody) {
 }
 
 let updateUserList = function(userList: any[]) {
-    $('.userList').empty();
+    $('.userItem').empty();
     userList.forEach(function(user) {
-        $('.userList').append(`<span class="tag is-dark user-tag">${user.nickname}</span>`);
+        $('.userItem').append(`<span class="tag is-dark user-tag">${user.nickname}</span>`);
     });
 }
 

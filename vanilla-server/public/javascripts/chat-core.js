@@ -35529,7 +35529,12 @@ var displayTimeout = function (timeout, now) {
     if (timeout == 0) {
         __WEBPACK_IMPORTED_MODULE_2_jquery__('.message-list .column').append("\n            <div class=\"message-parent\">\n                <div class=\"message-container\">\n                    <div class=\"noti-message\">chat timeouted</div></div></div>");
     }
-    __WEBPACK_IMPORTED_MODULE_2_jquery__('.timeout-in-message').text(__WEBPACK_IMPORTED_MODULE_1_moment__["utc"](timeout - now).format('HH:mm:ss'));
+    var remain = __WEBPACK_IMPORTED_MODULE_1_moment__["utc"](timeout - now);
+    __WEBPACK_IMPORTED_MODULE_2_jquery__('.timeout-banner').text(remain.format('HH:mm:ss'));
+    __WEBPACK_IMPORTED_MODULE_2_jquery__('.timeout-in-message').text(remain.format('HH:mm:ss'));
+    if (remain.subtract(1, 'minutes') < __WEBPACK_IMPORTED_MODULE_1_moment__(0)) {
+        __WEBPACK_IMPORTED_MODULE_2_jquery__('.timeout-banner').addClass('red');
+    }
 };
 var disableTextInput = function () {
     __WEBPACK_IMPORTED_MODULE_2_jquery__('input[name=inp-text]').prop('disabled', true);
@@ -35585,9 +35590,9 @@ var send = function (obj) {
     sock.send(JSON.stringify(obj));
 };
 var updateUserList = function (userList) {
-    __WEBPACK_IMPORTED_MODULE_2_jquery__('.userList').empty();
+    __WEBPACK_IMPORTED_MODULE_2_jquery__('.userItem').empty();
     userList.forEach(function (user) {
-        __WEBPACK_IMPORTED_MODULE_2_jquery__('.userList').append("<span class=\"tag is-dark user-tag\">" + user.nickname + "</span>");
+        __WEBPACK_IMPORTED_MODULE_2_jquery__('.userItem').append("<span class=\"tag is-dark user-tag\">" + user.nickname + "</span>");
     });
 };
 var messageHandler = {
